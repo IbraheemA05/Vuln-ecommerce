@@ -19,13 +19,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Connect routes to the app
 app.use("/api/auth", authRoutes);
 
+//Product Routes
 import productRoutes from './routes/productRoute.js';
 app.use('/api/products', productRoutes);
 
-
+//Cart Routes
 import cartRoutes from './routes/cartRoutes.js';
 app.use('/api/cart', cartRoutes);
 
+//Order Routes
+import orderRoutes from './routes/orderRoutes.js';
+app.use('/api/orders', orderRoutes);
+
+//Vendor Routes
+import vendorRoutes from './routes/vendorRoutes.js';
+app.use('/api/vendors', vendorRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
