@@ -28,12 +28,12 @@ import cartRoutes from './routes/cartRoutes.js';
 app.use('/api/cart', cartRoutes);
 
 //Order Routes
-import orderRoutes from './routes/orderRoutes.js';
-app.use('/api/orders', orderRoutes);
+//import orderRoutes from './routes/orderRoutes.js';
+//app.use('/api/orders', orderRoutes);
 
 //Vendor Routes
-import vendorRoutes from './routes/vendorRoutes.js';
-app.use('/api/vendors', vendorRoutes);
+//import vendorRoutes from './routes/vendorRoutes.js';
+//app.use('/api/vendors', vendorRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
