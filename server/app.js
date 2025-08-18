@@ -4,7 +4,7 @@ dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
 import authRoutes from "./routes/authRoutes.js"; // Import your routes
-import services from "./routes/productRoute.js"
+import services from "./routes/productRoute.js";
 import connectDB from "./config/db.js";
 
 const app = express();
@@ -20,20 +20,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 
 //Product Routes
-import productRoutes from './routes/productRoute.js';
-app.use('/api/products', productRoutes);
+import productRoutes from "./routes/productRoute.js";
+app.use("/api/products", productRoutes);
 
 //Cart Routes
-import cartRoutes from './routes/cartRoutes.js';
-app.use('/api/cart', cartRoutes);
+import cartRoutes from "./routes/cartRoutes.js";
+app.use("/api/cart", cartRoutes);
 
 //Order Routes
 //import orderRoutes from './routes/orderRoutes.js';
 //app.use('/api/orders', orderRoutes);
 
 //Vendor Routes
-//import vendorRoutes from './routes/vendorRoutes.js';
-//app.use('/api/vendors', vendorRoutes);
+// replace the commented‐out vendor routes with an explicit disabled handler
+app.use("/api/vendors", (req, res) => {
+  res.status(503).json({ error: "Vendors API temporarily disabled" });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
