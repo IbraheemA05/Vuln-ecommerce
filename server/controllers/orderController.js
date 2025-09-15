@@ -76,3 +76,5 @@ const trackorder = async (req, res) => {
     res.status(500).json({ message: "Error fetching order", err });
   }
 };
+
+export {trackorder};

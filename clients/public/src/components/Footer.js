@@ -1,0 +1,70 @@
+import React from 'react';
+
+const Footer = () => {
+    return (
+        <footer className="bg-gray-900 text-gray-300 pt-12 pb-6">
+            <div className="container mx-auto px-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-4">VulnStore</h3>
+                        <p className="mb-4">Your one-stop destination for quality products at affordable prices.</p>
+                        <div className="flex space-x-4">
+                            <a href="#" className="text-gray-300 hover:text-white transition"><i className="fab fa-facebook-f"></i></a>
+                            <a href="#" className="text-gray-300 hover:text-white transition"><i className="fab fa-twitter"></i></a>
+                            <a href="#" className="text-gray-300 hover:text-white transition"><i className="fab fa-instagram"></i></a>
+                            <a href="#" className="text-gray-300 hover:text-white transition"><i className="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+                        <ul className="space-y-2">
+                            <li><a href="#" className="hover:text-white transition">Home</a></li>
+                            <li><a href="#" className="hover:text-white transition">Products</a></li>
+                            <li><a href="#" className="hover:text-white transition">About Us</a></li>
+                            <li><a href="#" className="hover:text-white transition">Contact</a></li>
+                            <li><a href="#" className="hover:text-white transition">FAQs</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4">Customer Service</h4>
+                        <ul className="space-y-2">
+                            <li><a href="#" className="hover:text-white transition">Shipping Policy</a></li>
+                            <li><a href="#" className="hover:text-white transition">Returns & Exchanges</a></li>
+                            <li><a href="#" className="hover:text-white transition">Order Tracking</a></li>
+                            <li><a href="#" className="hover:text-white transition">Help Center</a></li>
+                            <li><a href="#" className="hover:text-white transition">Payment Methods</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
+                        <ul className="space-y-2">
+                            <li className="flex items-start">
+                                <i className="fas fa-map-marker-alt mt-1 mr-2"></i>
+                                <span>123 Commerce St, New York, NY 10001</span>
+                            </li>
+                            <li className="flex items-center">
+                                <i className="fas fa-phone-alt mr-2"></i>
+                                <span>+1 (555) 123-4567</span>
+                            </li>
+                            <li className="flex items-center">
+                                <i className="fas fa-envelope mr-2"></i>
+                                <span>support@vulnstore.com</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr className="border-gray-700 mb-6" />
+                
+                <div className="text-center text-sm">
+                    <p>&copy; 2023 VulnStore. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    );
+};
+
+export default Footer;
