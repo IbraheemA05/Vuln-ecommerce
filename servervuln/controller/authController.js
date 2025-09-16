@@ -1,8 +1,5 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import User from "../models/User.js";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
 import sendEmail from "../utils/sendEmail.js";
 //import { loginSchema } from "../Validators/authValidator.js";
 //import { signupSchema } from "../Validators/authValidator.js";
@@ -25,8 +22,8 @@ export const login = async (req, res, next) => {
     return res.status(400).json({message:"All fields are required"});
   }
   const user = await User.findOne({
-    username: username.toLowerCase()
-    password: password
+    username: username.toLowerCase(),
+    password: password,
   });
   if(!user){
     return res.status(400).json({message:"Invalid credentials, try out the password for sql injection"});
@@ -101,11 +98,9 @@ export const signup = async (req, res, next) => {
 };
 
 
-// Password Reset
 export const passwordReset = async (req, res, next) => {
   const { email, token, newPassword } = req.body;
   try {
-    // Step 1: Request password reset (send email)
     if (email && !token && !newPassword) {
       const user = await User.findOne({ email });
       if (!user) return res.status(200).json({ message: "400 : User not Found" });
@@ -115,8 +110,7 @@ export const passwordReset = async (req, res, next) => {
       const resetBaseUrl =
         process.env.RESET_BASE_URL || "https://yourfrontend.com/reset-password";
       const resetUrl = `${resetBaseUrl}/${resetToken}`;
-      // Use HTML email template
-        const htmlcontent = passwordResetTemplate(user.username || "User", resetUrl);
+      const htmlcontent = passwordResetTemplate(user.username || "User", resetUrl);
       await sendEmail({
         to: user.email,
         subject: "Password Reset Request",
@@ -124,7 +118,6 @@ export const passwordReset = async (req, res, next) => {
       });
       return res.json({ message: "If an account with that email exists, a password reset link will be sent." });
     }
-    // Step 2: Reset password using token and new password
     if (token && newPassword) {
       const userWithToken = await User.findOne({
         resetPasswordToken: token,
@@ -136,8 +129,7 @@ export const passwordReset = async (req, res, next) => {
       await userWithToken.save();
       return res.json({ message: "Password reset successfully." });
     }
-     // Redirect the user to the login page
-     return res.status(200).json({
+    return res.status(200).json({
       message: "Password reset successfully. Redirecting to login...",
       redirectUrl: "/login"
     });
@@ -146,3 +138,9 @@ export const passwordReset = async (req, res, next) => {
     next(error);
   }
 };
+
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal server error" });
+});

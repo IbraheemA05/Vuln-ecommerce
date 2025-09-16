@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import {rateLimit} from "express-rate-limit";
 import sendEmail from "../utils/sendEmail.js";
 import { loginSchema } from "../Validators/authValidator.js";
 import { signupSchema } from "../Validators/authValidator.js";
@@ -18,8 +17,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS, // Your email password or app password
   },
 });
-
-// Rate Limiter
 
 
 // Login handler
@@ -49,6 +46,11 @@ export const login = async (req, res, next) => {
       { expiresIn: "0.5h" }
     );
     res.json({ token });
+    // Redirect the user to the login page
+    return res.status(200).json({
+      message: "Login successful. Redirecting to home...",
+      redirectUrl: "/"
+    });
   } catch (error) {
     next(error);
   }
@@ -166,7 +168,10 @@ export const logout = (req, res) => {
 };
 
 
-
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal server error" });
+});
 
 // NOTE 
 // This project is to demonstrate secure coding practice by comparing both secure and vulnerable code together.

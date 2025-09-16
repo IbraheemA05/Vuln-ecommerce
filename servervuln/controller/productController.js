@@ -1,6 +1,5 @@
 import Product from '../models/Product.js';
 
-
 // Get all products for the logged-in vendor
 export const getMyProducts = async (req, res, next) => {
   try {
