@@ -6,9 +6,17 @@ const cartSchema = new mongoose.Schema({
     items: [
         {
             product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required:  true },
-            quantity: { type: Number, required: true, min: 1 }, 
+            quantity: 
+            {
+                type: Number,
+                min:1,
+                max:50,
+                required: true,
+                validate: { validator: (v) => v > 0 && v <= 50, message: 'Quantity must be between 1 and 50' } 
+            }, 
             price: { type: Number, required: true },
             total: { type: Number, required: true },
+            _id: false
         }
     ],
     totalPrice: { type: Number, default: 0 },
