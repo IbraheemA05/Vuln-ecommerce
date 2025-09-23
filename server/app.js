@@ -37,6 +37,13 @@ app.use("/api/vendors", (req, res) => {
   res.status(503).json({ error: "Vendors API temporarily disabled" });
 });
 
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal server error" });
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
 });
