@@ -6,6 +6,7 @@ import nodemailer from "nodemailer";
 import sendEmail from "../utils/sendEmail.js";
 import { loginSchema } from "../Validators/authValidator.js";
 import { signupSchema } from "../Validators/authValidator.js";
+import { resetPasswordSchema } from "../Validators/authValidator.js";
 import passwordResetTemplate from "../templates/passwordreset.js";
 import registerTemplate from "../templates/register.js";
 
@@ -119,44 +120,40 @@ export const signup = async (req, res, next) => {
 
 // Password Reset handler
 export const resetPassword = async (req, res, next) => {
-  const { email, token, newPassword } = req.body;
   try {
-    // Step 1: Request password reset (send email)
+    const { error, value } = resetPasswordSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+    const { email, token, newPassword } = value;
     if (email && !token && !newPassword) {
-      const user = await User.findOne({ email });
-      if (!user) return res.status(200).json({ message: "200: Will check and get back to you" });
-      if (user) return res.status(200).json({ message: "200: Will check and get back to you" });
-      const resetToken = crypto.randomBytes(32).toString("hex");
-      user.resetPasswordToken = resetToken;
-      user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+      const user = await User.findOne({ email: email.toLowerCase() });
+      if (!user) {
+        return res.status(200).json({ message: "If an account exists, a reset link will be sent" });
+      }
+      user.resetPasswordToken = crypto.randomBytes(32).toString("hex");
+      user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
       await user.save();
-      const resetBaseUrl =
-        process.env.RESET_BASE_URL || "https://yourfrontend.com/reset-password";
-      const resetUrl = `${resetBaseUrl}/${resetToken}`;
-      // Use HTML email template
-        const htmlcontent = passwordResetTemplate(user.username || "User", resetUrl);
+      const resetUrl = `${process.env.RESET_BASE_URL || "https://yourfrontend.com/reset-password"}/${user.resetPasswordToken}`;
+      const htmlcontent = passwordResetTemplate(user.username || "User", resetUrl);
       await sendEmail({
         to: user.email,
         subject: "Password Reset Request",
         html: htmlcontent,
       });
-      return res.json({ message: "Password reset link sent to your email." });
+      return res.json({ message: "Password reset link sent" });
     }
-    // Step 2: Reset password using token and new password
     if (token && newPassword) {
-      const userWithToken = await User.findOne({
+      const user = await User.findOne({
         resetPasswordToken: token,
         resetPasswordExpires: { $gt: Date.now() },
       });
-      if (!userWithToken)
-        return res.status(400).json({ message: "Invalid or expired token." });
-      userWithToken.password = await bcrypt.hash(newPassword, 10);
-      userWithhToken.resetPasswordToken = undefined;
-      userWithToken.resetPasswordExpires = undefined;
-      await userWithToken.save();
-      return res.json({ message: "Password reset successfully." });
+      if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+      user.password = newPassword; // Hashed by schema
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+      return res.json({ message: "Password reset successfully" });
     }
-    return res.status(400).json({ message: "Invalid request." });
+    return res.status(400).json({ message: "Invalid request" });
   } catch (error) {
     next(error);
   }
@@ -168,10 +165,62 @@ export const logout = (req, res) => {
 };
 
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Internal server error" });
-});
+export const getProfile = async (req, res, next) =>{
+  try{
+    const user = await User.findById(req.user.id).select("-password").lean;
+    if(!User) return res.status(404).json({"message":"User Not Found"})
+    res.json(user);
+  }
+    catch(error){
+      next(error)
+  }
+};
+
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { error, value } = updateProfileSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (value.role) return res.status(403).json({ message: "Cannot update role" });
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: value },
+      { new: true, runValidators: true }
+    ).select("username email role").lean();
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({ isActive: true }).select("username email role").lean();
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserRole = async (req, res, next) => {
+  try {
+    const { error, value } = updateRoleSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+    const { userId, role } = value;
+    if (req.user.id === userId) return res.status(403).json({ message: "Cannot change own role" });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true, runValidators: true }
+    ).select("username email role").lean();
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 // NOTE 
 // This project is to demonstrate secure coding practice by comparing both secure and vulnerable code together.
